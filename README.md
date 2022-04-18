@@ -81,13 +81,13 @@ You can choose to run ConceptBert with Docker or from your environment
 ## Start the container
 
 ```bash
-  docker run -it -v /path/to/you/nas/:/nas-data/ conceptbert:latest bash
+  docker run -it -v /path/to/you/nas/:./nas-data/ conceptbert:latest bash
 ```
 
 ### Additional parameters
 
 ```bash
-  docker run -it -v --shm-size=10g -e CUDA_VISIBLE_DEVICES=0,1,2,3 -v /path/to/you/nas/:/nas-data/ conceptbert:latest bash
+  docker run -it -v --shm-size=10g -e CUDA_VISIBLE_DEVICES=0,1,2,3 -v /path/to/you/nas/:./nas-data/ conceptbert:latest bash
 ```
 
 * `--shm-size` is used to prevent Shared Memory error. Here the value is
@@ -118,10 +118,10 @@ First we use VQA dataset to train a baseline model. Use the following command:
 
 ```bash
   python3 -u train_tasks.py --model_version 3 --bert_model=bert-base-uncased --from_pretrained_conceptBert None \
-      --from_pretrained=/nas-data/vilbert/data2/kilbert_base_model/pytorch_model_9.bin \
+      --from_pretrained=./nas-data/vilbert/data2/kilbert_base_model/pytorch_model_9.bin \
       --config_file config/bert_base_6layer_6conect.json \
-      --output_dir=/nas-data/outputs/train1_vqa_trained_model/ \
-      --summary_writer /nas-data/tensorboards/ \
+      --output_dir=./nas-data/outputs/train1_vqa_trained_model/ \
+      --summary_writer ./nas-data/tensorboards/ \
       --num_workers 16 \
       --tasks 0
 ```
@@ -148,10 +148,10 @@ Then we use OK-VQA dataset and the trained model from step 1 to train a model. U
 
 ```bash
   python3 -u train_tasks.py --model_version 3 --bert_model=bert-base-uncased \
-      --from_pretrained=/nas-data/vilbert/data2/save_final/VQA_bert_base_6layer_6conect-beta_vilbert_vqa/pytorch_model_11.bin \
-      --from_pretrained_conceptBert /nas-data/outputs/train1_vqa_trained_model/VQA_bert_base_6layer_6conect/pytorch_model_19.bin \
+      --from_pretrained=./nas-data/vilbert/data2/save_final/VQA_bert_base_6layer_6conect-beta_vilbert_vqa/pytorch_model_11.bin \
+      --from_pretrained_conceptBert ./nas-data/outputs/train1_vqa_trained_model/VQA_bert_base_6layer_6conect/pytorch_model_19.bin \
       --config_file config/bert_base_6layer_6conect.json \
-      --output_dir=/nas-data/outputs/train2_okvqa_trained_model/ \
+      --output_dir=./nas-data/outputs/train2_okvqa_trained_model/ \
       --summary_writer /outputs/tensorboards/  \
       --num_workers 16 \
       --tasks 42
@@ -174,10 +174,10 @@ VQA_bert_base_6layer_6conect
 
 ```bash
   python3 -u eval_tasks.py --model_version 3 --bert_model=bert-base-uncased \
-      --from_pretrained=/nas-data/vilbert/data2/save_final/VQA_bert_base_6layer_6conect-beta_vilbert_vqa/pytorch_model_11.bin  \
-      --from_pretrained_conceptBert=/nas-data/outputs/train2_okvqa_trained_model/OK-VQA_bert_base_6layer_6conect/pytorch_model_99.bin \
+      --from_pretrained=./nas-data/vilbert/data2/save_final/VQA_bert_base_6layer_6conect-beta_vilbert_vqa/pytorch_model_11.bin  \
+      --from_pretrained_conceptBert=./nas-data/outputs/train2_okvqa_trained_model/OK-VQA_bert_base_6layer_6conect/pytorch_model_99.bin \
       --config_file config/bert_base_6layer_6conect.json \
-      --output_dir=/nas-data/outputs/validation_okvqa_trained_model/ \
+      --output_dir=./nas-data/outputs/validation_okvqa_trained_model/ \
       --num_workers 16 \
       --tasks 42 \
       --split val
@@ -206,15 +206,15 @@ Run the evaluation :
 
 ```bash
   python3 PythonEvaluationTools/vqaEval_okvqa.py \
-      --json_dir /nas-data/outputs/validation_okvqa_trained_model/ \
-      --output_dir /nas-data/outputs/validation_okvqa_trained_model/
+      --json_dir ./nas-data/outputs/validation_okvqa_trained_model/ \
+      --output_dir ./nas-data/outputs/validation_okvqa_trained_model/
 ```
 
 ## Command description
 
 * `json_dir`: path where is located the `val_result.json`
 * `output_path`: folder where the accuracy will be saved
-* `/nas-data/outputs/validation_okvqa_trained_model/`: is the final json. *You must change this by the path of
+* `./nas-data/outputs/validation_okvqa_trained_model/`: is the final json. *You must change this by the path of
   the json you want to evaluate*.
 
 # :bug: Known issues
