@@ -32,6 +32,9 @@ from optimization import BertAdam, Adam, Adamax
 import utils as utils
 from load_conceptBert import load_conceptBert
 
+# os.environ['MASTER_ADDR'] = 'localhost'
+# os.environ['MASTER_PORT'] = '5678'
+
 # LOGGER CONFIGURATION ###
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(name)s -    %(message)s",
@@ -202,9 +205,9 @@ def main():
     args = parser.parse_args()
 
 
-    writer = SummaryWriter(
-        os.path.join(args.summary_writer, today, str(current_time))
-    )
+    # writer = SummaryWriter(
+    #     os.path.join(args.summary_writer, today, str(current_time))
+    # )
 
 
     with open("vlbert_tasks.yml", "r") as f:
@@ -313,7 +316,8 @@ def main():
         os.makedirs(output_dir)
     else:
         output_dir = output_dir + f"{now.strftime('d%m%Y%H%M%S')}"
-        os.makedirs(output_dir)
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
 
     num_train_optimization_steps = (
         max(task_num_iters.values())
@@ -522,29 +526,30 @@ def main():
 
                     # Update tensorboard
                     niter = epochId * max_num_iter + step
-                    writer.add_scalar("Train/Loss", loss.item(), niter)
-                    writer.add_scalar("Train/Score", score.item(), niter)
+                    # writer.add_scalar("Train/Loss", loss.item(), niter)
+                    # writer.add_scalar("Train/Score", score.item(), niter)
 
                     loss.backward()
                     if (step + 1) % args.gradient_accumulation_steps == 0:
                         optimizer.step()
                         model.zero_grad()
 
-                        if default_gpu:
-                            tbLogger.step_train(
-                                epochId,
-                                iterId,
-                                float(loss),
-                                float(score),
-                                optimizer.show_lr(),
-                                task_id,
-                                task_batch_size[task_id],
-                                "train",
-                            )
+                        # if default_gpu:
+
+                        tbLogger.step_train(
+                            epochId,
+                            iterId,
+                            float(loss),
+                            float(score),
+                            optimizer.show_lr(),
+                            task_id,
+                            task_batch_size[task_id],
+                            "train",
+                        )
 
             if (
-                # step % (20 * args.gradient_accumulation_steps) == 0
-                step % (8 * args.gradient_accumulation_steps) == 0
+                step % (20 * args.gradient_accumulation_steps) == 0
+                # step % (8 * args.gradient_accumulation_steps) == 0
                 and step != 0
                 and default_gpu
             ):
@@ -574,7 +579,7 @@ def main():
             )
             torch.save(model_to_save.state_dict(), output_model_file)
 
-    writer.close()
+    # writer.close()
     tbLogger.txt_close()
 
 

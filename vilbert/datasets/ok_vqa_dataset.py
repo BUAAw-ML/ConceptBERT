@@ -147,6 +147,7 @@ class OKVQAClassificationDataset(Dataset):
         else:
             logger.info("Loading from %s" % cache_path)
             self.entries = cPickle.load(open(cache_path, "rb"))
+        logger.info("The number of samples %d" %len(self.entries))
 
     def tokenize(self, max_length=16):
         """Tokenizes the questions.

@@ -179,7 +179,9 @@ class tbLogger(object):
     def customShowLossTrain(self):
         # Shows the current loss, once showed, reset the loss
         ave_score = 0
+
         for task_id in self.task_ids:
+
             ave_score += self.task_score[task_id] / float(
                 self.task_datasize_train[task_id]
             )

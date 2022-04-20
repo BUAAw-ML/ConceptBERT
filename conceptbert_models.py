@@ -160,7 +160,8 @@ class ConceptBert(nn.Module):
             effectively the same as removing these entirely.
         """
         extended_attention_mask = extended_attention_mask.to(
-            dtype=next(self.parameters()).dtype
+            # dtype=next(self.parameters()).dtype
+            dtype=torch.float32
         )  # fp16 compatibility
         extended_image_attention_mask = (1.0 - extended_image_attention_mask) * -10000.0
 
@@ -173,7 +174,8 @@ class ConceptBert(nn.Module):
 
         extended_co_attention_mask = extended_co_attention_mask * 5.0
         extended_co_attention_mask = extended_co_attention_mask.to(
-            dtype=next(self.parameters()).dtype
+            # dtype=next(self.parameters()).dtype
+            dtype=torch.float32
         )  # fp16 compatibility
 
         ## Step 1: Prepare the inputs for the main modules

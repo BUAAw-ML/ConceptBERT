@@ -13,6 +13,8 @@ import pdb
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 
+from .compute_softscore import create_dataset_cache
+
 def assert_eq(real, expected):
     assert real == expected, "%s (true) vs %s (expected)" % (real, expected)
 
@@ -100,6 +102,12 @@ class VQAClassificationDataset(Dataset):
     ):
         super().__init__()
         self.split = split
+        if not os.path.exists(
+            os.path.join(dataroot, "cache", "trainval_ans2label.pkl")
+        ) or not os.path.exists(
+            os.path.join(dataroot, "cache", "trainval_label2ans.pkl")
+        ):
+            create_dataset_cache(task)
         ans2label_path = os.path.join(dataroot, "cache", "trainval_ans2label.pkl")
         label2ans_path = os.path.join(dataroot, "cache", "trainval_label2ans.pkl")
         self.ans2label = cPickle.load(open(ans2label_path, "rb"))
@@ -123,6 +131,7 @@ class VQAClassificationDataset(Dataset):
         else:
             logger.info("Loading from %s" %cache_path)
             self.entries = cPickle.load(open(cache_path, "rb"))
+        logger.info("The number of samples %d" %len(self.entries))
 
     def tokenize(self, max_length=16):
         """Tokenizes the questions.

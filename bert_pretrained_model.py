@@ -1344,12 +1344,14 @@ class BertModel(BertPreTrainedModel):
         # Since we are adding it to the raw scores before the softmax, this is
         # effectively the same as removing these entirely.
         extended_attention_mask = extended_attention_mask.to(
-            dtype=next(self.parameters()).dtype
+            # dtype=next(self.parameters()).dtype
+            dtype=torch.float32
         )  # fp16 compatibility
         extended_attention_mask = (1.0 - extended_attention_mask) * -10000.0
 
         extended_image_attention_mask = extended_image_attention_mask.to(
-            dtype=next(self.parameters()).dtype
+            # dtype=next(self.parameters()).dtype
+            dtype=torch.float32
         )  # fp16 compatibility
         extended_image_attention_mask = (1.0 - extended_image_attention_mask) * -10000.0
 
@@ -1361,7 +1363,8 @@ class BertModel(BertPreTrainedModel):
         # extended_co_attention_mask = co_attention_mask.unsqueeze(-1)
         extended_co_attention_mask = extended_co_attention_mask * 5.0
         extended_co_attention_mask = extended_co_attention_mask.to(
-            dtype=next(self.parameters()).dtype
+            # dtype=next(self.parameters()).dtype
+            dtype=torch.float32
         )  # fp16 compatibility
 
         embedding_output = self.embeddings(input_txt, token_type_ids)
@@ -1555,7 +1558,7 @@ class VILBertForVLTasks(BertPreTrainedModel):
         
         vil_prediction = self.vil_prediction(pooled_output)
         vil_logit = self.vil_logit(pooled_output)
-        vision_logit = self.vision_logit(self.dropout(sequence_output_v)) + ((1.0 - image_attention_mask)* -10000.0).unsqueeze(2).to(dtype=next(self.parameters()).dtype)
+        vision_logit = self.vision_logit(self.dropout(sequence_output_v)) + ((1.0 - image_attention_mask)* -10000.0).unsqueeze(2).to(dtype=torch.float32)#dtype=next(self.parameters()).dtype)
         linguisic_logit = self.linguisic_logit(self.dropout(sequence_output_t))
 
         return vil_prediction, vil_logit, vil_binary_prediction, vision_prediction, vision_logit, linguisic_prediction, linguisic_logit
