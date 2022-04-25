@@ -82,10 +82,10 @@ def load_conceptBert(model, path_pretrained):
             )
         )
         
-    if len(error_msgs) > 0:
-        raise RuntimeError(
-            "Error(s) in loading state_dict for {}: \n\t{}".format(
-                model.__class__.__name__, "\n\t".join(error_msgs)
-            )
-        )
+    # if len(error_msgs) > 0:
+    #     raise RuntimeError(
+    #         "Error(s) in loading state_dict for {}: \n\t{}".format(
+    #             model.__class__.__name__, "\n\t".join(error_msgs)
+    #         )
+    #     )
     return model

@@ -1365,6 +1365,8 @@ class BertPreTrainedModel(nn.Module):
             logger.info("Model config {}".format(config))
         # Instantiate model.
         model = cls(config, num_labels, split, *inputs, **kwargs)
+        # model = torch.nn.DataParallel(model)
+        # model = model.module
         if state_dict is None and not from_tf:
             weights_path = os.path.join(serialization_dir, WEIGHTS_NAME)
             state_dict = torch.load(
@@ -1407,6 +1409,7 @@ class BertPreTrainedModel(nn.Module):
 
         def load(module, prefix=""):
             local_metadata = {} if metadata is None else metadata.get(prefix[:-1], {})
+        
             module._load_from_state_dict(
                 state_dict,
                 prefix,
@@ -1417,8 +1420,14 @@ class BertPreTrainedModel(nn.Module):
                 unexpected_keys,
                 error_msgs,
             )
+        
             for name, child in module._modules.items():
-                if child is not None:
+
+                if child is not None:# and  name != "vil_prediction": #prefix != "vil_prediction" and
+
+                    # print(name)
+                    # print(child)
+                    # print("-------")
                     load(child, prefix + name + ".")
 
         start_prefix = ""
@@ -1426,6 +1435,7 @@ class BertPreTrainedModel(nn.Module):
             s.startswith("bert.") for s in state_dict.keys()
         ):
             start_prefix = "bert."
+        
         load(model, prefix=start_prefix)
         
         ####### BEGIN ADDED PART #######
@@ -1504,12 +1514,12 @@ class BertPreTrainedModel(nn.Module):
                     model.__class__.__name__, unexpected_keys
                 )
             )
-        if len(error_msgs) > 0 and default_gpu:
-            raise RuntimeError(
-                "Error(s) in loading state_dict for {}:\n\t{}".format(
-                    model.__class__.__name__, "\n\t".join(error_msgs)
-                )
-            )
+        # if len(error_msgs) > 0 and default_gpu:
+        #     raise RuntimeError(
+        #         "Error(s) in loading state_dict for {}:\n\t{}".format(
+        #             model.__class__.__name__, "\n\t".join(error_msgs)
+        #         )
+        #     )
         return model
 
 

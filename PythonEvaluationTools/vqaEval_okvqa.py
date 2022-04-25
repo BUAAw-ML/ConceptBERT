@@ -2,8 +2,8 @@
 import argparse
 import json
 
-from conceptBert.PythonEvaluationTools.vqaEval import VQAEval
-from conceptBert.PythonEvaluationTools.vqa_helper import VQA
+from vqaEval import VQAEval #PythonEvaluationTools.
+from vqa_helper import VQA
 
 # set up file names and paths
 taskType = 'OpenEnded'
